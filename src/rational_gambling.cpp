@@ -4,7 +4,7 @@
 constexpr int ITERATIONS = 1e4;
 constexpr int CANDIDATE_BET_PERCENT_COUNT = 100;
 constexpr int ROUNDS = 100;
-constexpr double WIN_PROBABILITY = 0.5;
+constexpr double WIN_PROBABILITY = 0.45;
 constexpr double PAYOUT_RATIO = 1.5;
 constexpr double STARTING_BANKROLL = 1.0;
 
@@ -80,11 +80,12 @@ int main() {
     double best_bet_percent;
     double best_success_probability;
     for (double bet_percent: bet_percents) {
-        std::cout << "Testing " << bet_percent << " bet percent" << std::endl;
         double success_probability = get_success_probability(bet_percent);
         if (success_probability >= best_success_probability) {
             best_bet_percent = bet_percent;
             best_success_probability = success_probability;
+            std::cout << "Current best bet percent is " << best_bet_percent << " with success probability "
+                      << best_success_probability << std::endl;
         }
     }
     std::cout << "Best bet percent is " << best_bet_percent << " with a " << best_success_probability
