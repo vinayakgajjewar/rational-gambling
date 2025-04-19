@@ -1,12 +1,12 @@
 #include <iostream>
 #include <random>
 
-constexpr int ITERATIONS = 1e6;
-constexpr int ROUNDS = 10;
+constexpr int ITERATIONS = 1e4;
+constexpr int CANDIDATE_BET_PERCENT_COUNT = 100;
+constexpr int ROUNDS = 100;
 constexpr double WIN_PROBABILITY = 0.5;
 constexpr double PAYOUT_RATIO = 1.5;
 constexpr double STARTING_BANKROLL = 1.0;
-constexpr double BET_PERCENT = 0.67;
 
 bool flip_coin(double probability_of_winning) {
     std::random_device random;
@@ -63,8 +63,20 @@ double get_success_probability(double bet_percent) {
     return success_probability;
 }
 
+std::vector<double> get_candidate_bet_percents(int count) {
+    std::vector<double> candidate_bet_percents;
+    double step_size = 1.0 / static_cast<double>(count);
+    double current_bet_percent = 0;
+    for (int i = 0; i < count; i++) {
+        candidate_bet_percents.push_back(current_bet_percent);
+        current_bet_percent += step_size;
+    }
+    assert(candidate_bet_percents.size() == count);
+    return candidate_bet_percents;
+}
+
 int main() {
-    std::vector<double> bet_percents = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
+    std::vector<double> bet_percents = get_candidate_bet_percents(CANDIDATE_BET_PERCENT_COUNT);
     double best_bet_percent;
     double best_success_probability;
     for (double bet_percent: bet_percents) {
