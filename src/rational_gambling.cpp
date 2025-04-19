@@ -1,11 +1,12 @@
 #include <iostream>
 #include <random>
 
-constexpr int ROUNDS = 10'000;
-constexpr double WIN_PROBABILITY = 0.55;
-constexpr double PAYOUT_RATIO = 1.0;
+constexpr int ITERATIONS = 1e6;
+constexpr int ROUNDS = 10;
+constexpr double WIN_PROBABILITY = 0.5;
+constexpr double PAYOUT_RATIO = 1.5;
 constexpr double STARTING_BANKROLL = 1.0;
-constexpr double BET_PERCENT = 0.1;
+constexpr double BET_PERCENT = 0.67;
 
 bool flip_coin(double probability_of_winning) {
     std::random_device random;
@@ -25,9 +26,11 @@ bool bankroll_condition_met(double bankroll) {
     return return_value;
 }
 
-int main() {
+bool simulate_rounds() {
+    bool bankroll_doubled = false;
     double bankroll = STARTING_BANKROLL;
-    for (int j = 0; j < ROUNDS; j++) {
+    int current_round = 1;
+    while (!bankroll_doubled && current_round <= ROUNDS) {
         double bet_size = bankroll * BET_PERCENT;
         bool result = flip_coin(WIN_PROBABILITY);
         if (result) {
@@ -36,9 +39,21 @@ int main() {
             bankroll -= bet_size;
         }
         if (bankroll_condition_met(bankroll)) {
-            std::cout << "Starting amount doubled after " << (j + 1) << " rounds" << std::endl;
-            break;
+            bankroll_doubled = true;
+        }
+        current_round++;
+    }
+    return bankroll_doubled;
+}
+
+int main() {
+    int successes = 0;
+    for (int i = 0; i < ITERATIONS; i++) {
+        bool success = simulate_rounds();
+        if (success) {
+            successes++;
         }
     }
-    std::cout << "Ending bankroll: " << bankroll << std::endl;
+    double success_probability = static_cast<double>(successes) / static_cast<double>(ITERATIONS);
+    std::cout << "Probability of success: " << success_probability << std::endl;
 }
