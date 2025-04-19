@@ -26,18 +26,23 @@ bool bankroll_condition_met(double bankroll) {
     return return_value;
 }
 
+double simulate_single_round(double current_bankroll) {
+    double bet_size = current_bankroll * BET_PERCENT;
+    bool result = flip_coin(WIN_PROBABILITY);
+    if (result) {
+        current_bankroll += (PAYOUT_RATIO * bet_size);
+    } else {
+        current_bankroll -= bet_size;
+    }
+    return current_bankroll;
+}
+
 bool simulate_rounds() {
     bool bankroll_doubled = false;
     double bankroll = STARTING_BANKROLL;
     int current_round = 1;
     while (!bankroll_doubled && current_round <= ROUNDS) {
-        double bet_size = bankroll * BET_PERCENT;
-        bool result = flip_coin(WIN_PROBABILITY);
-        if (result) {
-            bankroll += (PAYOUT_RATIO * bet_size);
-        } else {
-            bankroll -= bet_size;
-        }
+        bankroll = simulate_single_round(bankroll);
         if (bankroll_condition_met(bankroll)) {
             bankroll_doubled = true;
         }
